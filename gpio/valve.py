@@ -6,8 +6,8 @@ from gpiozero import OutputDevice
 
 class AutoFactory:
     def __init__(self):
-        self.cam = OutputDevice("GPIO26")
-        self.blower = OutputDevice("GPIO12")
+        self.cam = OutputDevice("26")
+        self.blower = OutputDevice("12")
 
         atexit.register(self.cleanup)
 
@@ -34,30 +34,25 @@ class AutoFactory:
         self.blower.off()
         print("GPIO pins cleaned up.")
 
+    def test_valve(self):
+        print("starting valve test...")
+        print(f"Valve 1: {self.cam.pin}, Valve 2: {self.blower.pin}")
+        print("Turning on valves...")
 
-def test_valve():
-    af = AutoFactory()
-    valve1 = af.cam
-    valve2 = af.blower
+        self.cam.on()
+        self.blower.on()
 
-    print("Starting valve test...")
-    print(f"Valve 1: {valve1.pin}, Valve 2: {valve2.pin}")
-    print("Turning on valves...")
-
-    valve1.on()
-    valve2.on()
-
-    try:
-        while True:
-            time.sleep(0.5)
-            valve1.toggle()
-            valve2.toggle()
-    except KeyboardInterrupt:
-        print("Exiting...")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        try:
+            while True:
+                time.sleep(0.5)
+                self.cam.toggle()
+                self.blower.toggle()
+        except KeyboardInterrupt:
+            print("Exiting...")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
     af = AutoFactory()
-    af.blowout()
+    af.test_valve()

@@ -20,3 +20,4 @@ if __name__ == "__main__":
         valve1.off()
         valve2.off()
         print("Cleaned up GPIO pins.")
+ 
