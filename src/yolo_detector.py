@@ -32,7 +32,7 @@ class YoloDetector:
         self.conf = conf
         self.iou = iou
 
-    def detect_on_video(self, video_source: Union[str, int], frame_limit: int = 3, show_window: bool = True) -> None:
+    def detect_on_video(self, video_source: Union[str, int], frame_limit: int = 3, show: bool = True) -> None:
         """
         動画またはカメラ入力に対してYOLO推論を実行する
         video_source: 動画ファイルパスまたはカメラ番号
@@ -53,7 +53,7 @@ class YoloDetector:
             else:
                 print("モデルが呼び出し可能ではありません")
                 break
-            if show_window:
+            if show:
                 if hasattr(results, "render"):
                     results.render()  # type: ignore
                 if hasattr(results, "ims"):
@@ -76,10 +76,10 @@ class YoloDetector:
                         print(
                             f"物体 {i + 1}: クラス {label}, 信頼度 {conf:.2f}, 座標 ({x1:.0f}, {y1:.0f}) - ({x2:.0f}, {y2:.0f})"
                         )
-            if show_window and cv2.waitKey(1) & 0xFF == ord("q"):
+            if show and cv2.waitKey(1) & 0xFF == ord("q"):
                 break
         camera.release()
-        if show_window:
+        if show:
             cv2.destroyAllWindows()
 
     def detect_on_image(self, image: Union[str, np.ndarray], show: bool = False) -> list:
@@ -120,14 +120,14 @@ class YoloDetector:
         return filtered
 
 
-def test_yolo_detector_video(video_path: pathlib.Path, model_type: YoloModel) -> None:
+def test_yolo_detector_video(video_path: pathlib.Path, model_type: YoloModel, show: bool = True) -> None:
     detector = YoloDetector(model_type=model_type)
-    detector.detect_on_video(str(video_path), show_window=True)
+    detector.detect_on_video(str(video_path), show=show)
 
 
-def test_yolo_detector_image(image_path: pathlib.Path, model_type: YoloModel) -> None:
+def test_yolo_detector_image(image_path: pathlib.Path, model_type: YoloModel, show: bool = True) -> None:
     detector = YoloDetector(model_type=model_type)
-    detector.detect_on_image(str(image_path), show=True)
+    detector.detect_on_image(str(image_path), show=show)
 
 
 if __name__ == "__main__":
