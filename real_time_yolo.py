@@ -7,12 +7,14 @@ import torch
 if __name__ == "__main__":
     root = pathlib.Path(__file__).resolve(strict=True).parent
 
+    print("loading model...")
+
     # --- 検出する際のモデルを読込 ---
     model = torch.hub.load(
         "./",
         "custom",
-        # path=str(root / "models" / "BKweights_epoch_150.pt"),
-        path=str(root / "models" / "BLweights_epoch_150.pt"),
+        path=str(root / "models" / "BKweights_epoch_150.pt"),
+        # path=str(root / "models" / "BLweights_epoch_200.pt"),
         source="local",
         # force_reload=True,
     )
@@ -24,7 +26,7 @@ if __name__ == "__main__":
     # --- 映像の読込元指定 ---
     # --- localの動画ファイルを指定
     camera = cv2.VideoCapture(
-        str(root / "samples" / "blue.mp4")  # --- 動画ファイルのパスを指定
+        str(root / "samples" / "black.mp4")  # --- 動画ファイルのパスを指定
     )
     # --- カメラ：Ch.(ここでは0)を指定
     # camera = cv2.VideoCapture(0)
