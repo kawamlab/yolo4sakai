@@ -1,15 +1,26 @@
 import pathlib
 from enum import Enum
-from typing import Optional, Union
+from typing import Union
 
 import cv2
 import numpy as np
 import torch
+from pydantic import BaseModel
 
 
 class YoloModel(Enum):
     BLACK = "BKweights_epoch_150.pt"
     BLUE = "BLweights_epoch_200.pt"
+
+
+class DetectionResult(BaseModel):
+    index: int
+    label: str
+    confidence: float
+    x1: float
+    y1: float
+    x2: float
+    y2: float
 
 
 class YoloDetector:
@@ -82,11 +93,11 @@ class YoloDetector:
         if show:
             cv2.destroyAllWindows()
 
-    def detect_on_image(self, image: Union[str, np.ndarray], show: bool = False) -> list:
+    def detect_on_image(self, image: Union[str, np.ndarray], show: bool = False) -> list[DetectionResult]:
         """
-        画像ファイルパスまたはndarrayを入力してYOLO推論を実行し、confでフィルタ済みの結果を返す
+        画像ファイルパスまたはndarrayを入力してYOLO推論を実行し、confでフィルタ済みのDetectionResultリストを返す
         show: Trueの場合は推論画像をウィンドウ表示（ウィンドウは閉じない）
-        戻り値: [ [x1, y1, x2, y2, conf, class], ... ]
+        戻り値: List[DetectionResult]
         """
         if isinstance(image, str):
             img = cv2.imread(image)
@@ -110,36 +121,48 @@ class YoloDetector:
                 cv2.imshow("detect_on_image", results.ims[0])  # type: ignore
                 cv2.waitKey(1)  # ウィンドウは閉じない
         result = getattr(results, "xyxy", [None])[0]
-        filtered = []
+        names = getattr(results, "names", {})
+        detection_results: list[DetectionResult] = []
         if result is not None:
-            for row in result:
+            for i, row in enumerate(result):
                 x1, y1, x2, y2, conf, _cls = row[:6]
                 if conf < self.conf:
                     continue
-                filtered.append(row.tolist())
-        return filtered
-
-
-def test_yolo_detector_video(video_path: pathlib.Path, model_type: YoloModel, show: bool = True) -> None:
-    detector = YoloDetector(model_type=model_type)
-    detector.detect_on_video(str(video_path), show=show)
-
-
-def test_yolo_detector_image(image_path: pathlib.Path, model_type: YoloModel, show: bool = True) -> None:
-    detector = YoloDetector(model_type=model_type)
-    result = detector.detect_on_image(str(image_path), show=show)
-    print(f"検出結果: {result}")
+                label = names.get(int(_cls), f"Class {int(_cls)}")
+                detection_results.append(
+                    DetectionResult(
+                        index=i + 1,
+                        label=label,
+                        confidence=float(conf),
+                        x1=float(x1),
+                        y1=float(y1),
+                        x2=float(x2),
+                        y2=float(y2),
+                    )
+                )
+        return detection_results
 
 
 if __name__ == "__main__":
     root = pathlib.Path(__file__).resolve(strict=True).parent.parent
-    images_dir = root / "samples" / "output_frames" / "black"
+    images_dir = root / "samples" / "output_frames" / "blue"
+
+    detector = YoloDetector(model_type=YoloModel.BLUE)
 
     for image_file in images_dir.glob("*.jpg"):
         image_path = image_file
-        print(f"Testing image: {image_path}")
+        print(f"Testing image: {image_path.stem}")
 
-        test_yolo_detector_image(image_path, model_type=YoloModel.BLACK, show=False)
+        results = detector.detect_on_image(str(image_path), show=True)
+        for result in results:
+            print(
+                f"物体 {result.index}: クラス {result.label}, 信頼度 {result.confidence:.2f}, "
+                f"座標 ({result.x1:.0f}, {result.y1:.0f}) - ({result.x2:.0f}, {result.y2:.0f})"
+            )
+        #                         print(
+        # f"物体 {i + 1}: クラス {label}, 信頼度 {conf:.2f}, 座標 ({x1:.0f}, {y1:.0f}) - ({x2:.0f}, {y2:.0f})"
+        #
+
 
 # 他ファイルからの利用例:
 # from src.yolo_detector import YoloDetector, YoloModel
