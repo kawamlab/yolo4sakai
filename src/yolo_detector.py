@@ -127,7 +127,8 @@ def test_yolo_detector_video(video_path: pathlib.Path, model_type: YoloModel, sh
 
 def test_yolo_detector_image(image_path: pathlib.Path, model_type: YoloModel, show: bool = True) -> None:
     detector = YoloDetector(model_type=model_type)
-    detector.detect_on_image(str(image_path), show=show)
+    result = detector.detect_on_image(str(image_path), show=show)
+    print(f"検出結果: {result}")
 
 
 if __name__ == "__main__":
@@ -138,7 +139,7 @@ if __name__ == "__main__":
         image_path = image_file
         print(f"Testing image: {image_path}")
 
-        test_yolo_detector_image(image_path, model_type=YoloModel.BLACK)
+        test_yolo_detector_image(image_path, model_type=YoloModel.BLACK, show=False)
 
 # 他ファイルからの利用例:
 # from src.yolo_detector import YoloDetector, YoloModel
