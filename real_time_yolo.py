@@ -14,11 +14,8 @@ if __name__ == "__main__":
         "./",
         "custom",
         path=str(root / "models" / "BKweights_epoch_150.pt"),
-<<<<<<< HEAD:realtimeyolo.py
         # path=str(root / "models" / "BLweights_epoch_150.pt"),
-=======
         # path=str(root / "models" / "BLweights_epoch_200.pt"),
->>>>>>> 972673b5185dc079d7d43017b51fcc1c9a1bb4e4:real_time_yolo.py
         source="local",
         # force_reload=True,
     )
