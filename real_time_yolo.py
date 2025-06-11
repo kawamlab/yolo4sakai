@@ -14,7 +14,6 @@ if __name__ == "__main__":
         "./",
         "custom",
         path=str(root / "models" / "BKweights_epoch_150.pt"),
-        # path=str(root / "models" / "BLweights_epoch_150.pt"),
         # path=str(root / "models" / "BLweights_epoch_200.pt"),
         source="local",
         # force_reload=True,
