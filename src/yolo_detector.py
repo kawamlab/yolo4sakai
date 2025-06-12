@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 class YoloModel(Enum):
     BLACK = "BKweights_epoch_150.pt"
-    BLUE = "BLweights_epoch_200.pt"
+    BLUE = "BLweights_re.pt"
 
 
 class DetectionResult(BaseModel):
