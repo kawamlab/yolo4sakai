@@ -1,8 +1,11 @@
 import pathlib
 import time
+from collections import Counter, defaultdict
 
 from gpio.valve import AutoFactory
 from src.yolo_detector import DetectionResult, YoloDetector, YoloModel
+
+show = True  # 物体検出結果を表示するかどうか
 
 if __name__ == "__main__":
     af = AutoFactory()
@@ -21,22 +24,32 @@ if __name__ == "__main__":
         print("カムを引き、パーツを検知エリアに配置しました。")
 
         # 物体検出を実行
+        # 物体検出をN回繰り返して確度を高める
+        N = 3  # 検出回数
+        detection_results = []
         print("物体検出を実行中...")
-        results = []
-        while not results:
-            results = detector.detect_on_image(0, show=True)
-            if not results:
-                print("No objects detected. 再検出します...")
-                time.sleep(0.5)
+        for i in range(N):
+            results = []
+            while not results:
+                results = detector.detect_on_image(0, show=show)
+                if not results:
+                    print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
+                    time.sleep(0.5)
+            detection_results.extend(results)
+            time.sleep(0.2)  # 連続検出時の間隔
 
-        for result in results:
-            print(
-                f"物体 {result.index}: クラス {result.label}, 信頼度 {result.confidence:.2f}, "
-                f"座標 ({result.x1:.0f}, {result.y1:.0f}) - ({result.x2:.0f}, {result.y2:.0f})"
-            )
+        label_counter = Counter([r.label for r in detection_results])
+        if not label_counter:
+            print("N回検出しても物体が見つかりませんでした。")
+            continue
+        most_common_label, count = label_counter.most_common(1)[0]
+        # 最頻ラベルの平均信頼度
+        confidences = [r.confidence for r in detection_results if r.label == most_common_label]
+        avg_conf = sum(confidences) / len(confidences)
+        print(f"最頻ラベル: {most_common_label} (出現回数: {count}/{N}), 平均信頼度: {avg_conf:.2f}")
 
-        # 物体検出結果の最初のものを使用(ここは必要に応じて変更)
-        part = results[0]
+        # 最頻ラベルの最初のDetectionResultをpartとする
+        part = next(r for r in detection_results if r.label == most_common_label)
 
         # パーツを通過させる
         af.cam.off()
