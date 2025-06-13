@@ -1,8 +1,17 @@
+import os
+import pathlib
+import sys
 import time
 from collections import Counter
 
 from gpio.valve import AutoFactory
 from src.yolo_detector import YoloDetector, YoloModel
+
+sys.modules["pathlib._local"] = pathlib
+if os.name == "nt":
+    pathlib.PosixPath = pathlib.WindowsPath
+else:
+    pathlib.WindowsPath = pathlib.PosixPath
 
 show = True  # 物体検出結果を表示するかどうか
 

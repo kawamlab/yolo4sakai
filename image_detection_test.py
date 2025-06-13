@@ -1,8 +1,16 @@
+import os
 import pathlib
+import sys
 
 import cv2
 
 from src.yolo_detector import YoloDetector, YoloModel
+
+sys.modules["pathlib._local"] = pathlib
+if os.name == "nt":
+    pathlib.PosixPath = pathlib.WindowsPath
+else:
+    pathlib.WindowsPath = pathlib.PosixPath
 
 if __name__ == "__main__":
     root = pathlib.Path(__file__).resolve(strict=True).parent
