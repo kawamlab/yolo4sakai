@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # 動画ファイルのパス
     video_path = str(root / "samples" / "blue.mp4")
     # camera = cv2.VideoCapture(video_path)
-    camera = cv2.VideoCapture(2)
+    camera = cv2.VideoCapture(0)
 
     end_count = 0
     frame_limit = 10
