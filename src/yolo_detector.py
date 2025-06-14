@@ -1,4 +1,5 @@
 import pathlib
+import subprocess
 from enum import Enum
 from typing import Union
 
@@ -51,6 +52,10 @@ class YoloDetector:
         frame_limit: 最大フレーム数
         show_window: 画像ウィンドウ表示有無
         """
+        # VideoCaptureの直前にカメラ設定スクリプトを実行
+        if isinstance(video_source, int) or (isinstance(video_source, str) and video_source.isdigit()):
+            subprocess.run(['bash', str(self.root / 'src' / 'set-camera.sh')])
+
         camera: cv2.VideoCapture = cv2.VideoCapture(video_source)
 
         # camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
@@ -114,6 +119,8 @@ class YoloDetector:
         elif isinstance(image, np.ndarray):
             img = image
         elif isinstance(image, int):
+            # VideoCaptureの直前にカメラ設定スクリプトを実行
+            subprocess.run(['bash', str(self.root / 'src' / 'set-camera.sh')])
             cap = cv2.VideoCapture(image)
 
             # cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
