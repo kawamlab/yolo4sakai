@@ -1,8 +1,11 @@
+import io
 import os
 import pathlib
 import sys
 
 import cv2
+import imageio.v2 as imageio
+from linuxpy.video.device import BufferType, Device, VideoCapture
 
 from src.yolo_detector import YoloDetector, YoloModel
 
@@ -16,7 +19,7 @@ if __name__ == "__main__":
     root = pathlib.Path(__file__).resolve(strict=True).parent
 
     # YOLO Detectorの初期化
-    detector = YoloDetector(model_type=YoloModel.BLUE, conf=0.55, iou=0.45)
+    detector = YoloDetector(model_type=YoloModel.BLUE_NEW, conf=0.55, iou=0.45)
 
     # 動画ファイルのパス
     video_path = str(root / "samples" / "blue.mp4")
@@ -26,7 +29,38 @@ if __name__ == "__main__":
 
     while end_count < frame_limit:
         # YOLO推論（画像1枚ごと）
-        results = detector.detect_on_image(0, show=True)
+
+        with Device.from_id(0) as cam:
+            # cam.set_format(width=640, height=480, buffer_type=BufferType.VIDEO_CAPTURE, pixel_format="MJPG")
+
+            capture = VideoCapture(cam)
+            capture.set_format(width=640, height=480)
+
+            with capture:
+                for frame in capture:
+                    img = None
+                    try:
+                        img = imageio.imread(io.BytesIO(frame.data))
+                        print(f"フレーム取得: {frame.frame_nb}, サイズ: {len(frame.data)} バイト")
+                    except BaseException as e:
+                        print(f"Error reading frame: {e}")
+                        continue
+
+                    break
+
+        if img is None:
+            print("No image data found, skipping frame.")
+            end_count += 1
+            continue
+
+        print(f"取得した画像の形状: {img.shape}")
+
+        # 色をBGRからRGBに変換
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+        print(f"フレーム取得: {frame.frame_nb}, サイズ: {len(frame.data)} バイト")
+
+        results = detector.detect_on_image(img, show=True)
 
         print(f"検出された物体の個数: {len(results)}")
         for det in results:
@@ -35,7 +69,7 @@ if __name__ == "__main__":
                 f"座標 ({det.x1:.0f}, {det.y1:.0f}) - ({det.x2:.0f}, {det.y2:.0f})"
             )
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) == 27:
             break
 
     cv2.destroyAllWindows()

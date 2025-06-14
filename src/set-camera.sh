@@ -15,5 +15,5 @@ v4l2-ctl -d $DEVICE \
   -c sharpness=3 \
   -c backlight_compensation=1 \
   -c auto_exposure=1 \
-  -c exposure_time_absolute=750 \
+  -c exposure_time_absolute=5000 \
   -c exposure_dynamic_framerate=0
