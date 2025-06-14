@@ -21,20 +21,12 @@ if __name__ == "__main__":
     # 動画ファイルのパス
     video_path = str(root / "samples" / "blue.mp4")
     # camera = cv2.VideoCapture(video_path)
-    camera = cv2.VideoCapture(0)
-
     end_count = 0
     frame_limit = 10
 
     while end_count < frame_limit:
-        ret, imgs = camera.read()
-        if not ret:
-            print("No frame")
-            end_count += 1
-            continue
-
         # YOLO推論（画像1枚ごと）
-        results = detector.detect_on_image(imgs, show=True)
+        results = detector.detect_on_image(0, show=True)
 
         print(f"検出された物体の個数: {len(results)}")
         for det in results:
@@ -46,5 +38,4 @@ if __name__ == "__main__":
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
-    camera.release()
     cv2.destroyAllWindows()

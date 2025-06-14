@@ -52,6 +52,10 @@ class YoloDetector:
         show_window: 画像ウィンドウ表示有無
         """
         camera: cv2.VideoCapture = cv2.VideoCapture(video_source)
+
+        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+        camera.set(cv2.CAP_PROP_EXPOSURE, 750)
+
         end_count: int = 0
         while end_count < frame_limit:
             ret: bool
@@ -111,6 +115,10 @@ class YoloDetector:
             img = image
         elif isinstance(image, int):
             cap = cv2.VideoCapture(image)
+
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+            cap.set(cv2.CAP_PROP_EXPOSURE, 750)
+
             ret, img = cap.read()
             cap.release()
             if not ret or img is None:
