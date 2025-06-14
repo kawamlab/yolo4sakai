@@ -53,7 +53,7 @@ class YoloDetector:
         """
         camera: cv2.VideoCapture = cv2.VideoCapture(video_source)
 
-        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
         camera.set(cv2.CAP_PROP_EXPOSURE, 750)
 
         end_count: int = 0
@@ -116,7 +116,7 @@ class YoloDetector:
         elif isinstance(image, int):
             cap = cv2.VideoCapture(image)
 
-            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
             cap.set(cv2.CAP_PROP_EXPOSURE, 750)
 
             ret, img = cap.read()
