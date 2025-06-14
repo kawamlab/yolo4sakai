@@ -1,5 +1,4 @@
 import pathlib
-import subprocess
 from enum import Enum
 from typing import Union
 
@@ -52,14 +51,23 @@ class YoloDetector:
         frame_limit: 最大フレーム数
         show_window: 画像ウィンドウ表示有無
         """
-        # VideoCaptureの直前にカメラ設定スクリプトを実行
-        if isinstance(video_source, int) or (isinstance(video_source, str) and video_source.isdigit()):
-            subprocess.run(['bash', str(self.root / 'src' / 'set-camera.sh')])
-
         camera: cv2.VideoCapture = cv2.VideoCapture(video_source)
 
-        # camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
-        # camera.set(cv2.CAP_PROP_EXPOSURE, 750)
+        # カメラ設定（set-camera.sh相当）
+        camera.set(cv2.CAP_PROP_BRIGHTNESS, 0)
+        camera.set(cv2.CAP_PROP_CONTRAST, 32)
+        camera.set(cv2.CAP_PROP_SATURATION, 75)
+        camera.set(cv2.CAP_PROP_HUE, 0)
+        camera.set(cv2.CAP_PROP_AUTO_WB, 0)
+        camera.set(cv2.CAP_PROP_WB_TEMPERATURE, 4600)
+        camera.set(cv2.CAP_PROP_GAMMA, 100)
+        camera.set(cv2.CAP_PROP_GAIN, 0)
+        # camera.set(cv2.CAP_PROP_POWERLINE_FREQUENCY, 1)  # OpenCV 4.5.1以降
+        camera.set(cv2.CAP_PROP_SHARPNESS, 3)
+        camera.set(cv2.CAP_PROP_BACKLIGHT, 1)
+        camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # カメラ依存。0,1,3なども試す
+        camera.set(cv2.CAP_PROP_EXPOSURE, 750)
+        # camera.set(cv2.CAP_PROP_EXPOSURE_DYNAMIC_FRAMERATE, 0)  # OpenCV未対応
 
         end_count: int = 0
         while end_count < frame_limit:
@@ -119,12 +127,22 @@ class YoloDetector:
         elif isinstance(image, np.ndarray):
             img = image
         elif isinstance(image, int):
-            # VideoCaptureの直前にカメラ設定スクリプトを実行
-            subprocess.run(['bash', str(self.root / 'src' / 'set-camera.sh')])
             cap = cv2.VideoCapture(image)
-
-            # cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
-            # cap.set(cv2.CAP_PROP_EXPOSURE, 750)
+            # カメラ設定（set-camera.sh相当）
+            cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
+            cap.set(cv2.CAP_PROP_CONTRAST, 32)
+            cap.set(cv2.CAP_PROP_SATURATION, 75)
+            cap.set(cv2.CAP_PROP_HUE, 0)
+            cap.set(cv2.CAP_PROP_AUTO_WB, 0)
+            cap.set(cv2.CAP_PROP_WB_TEMPERATURE, 4600)
+            cap.set(cv2.CAP_PROP_GAMMA, 100)
+            cap.set(cv2.CAP_PROP_GAIN, 0)
+            # cap.set(cv2.CAP_PROP_POWERLINE_FREQUENCY, 1)  # OpenCV 4.5.1以降
+            cap.set(cv2.CAP_PROP_SHARPNESS, 3)
+            cap.set(cv2.CAP_PROP_BACKLIGHT, 1)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # カメラ依存。0,1,3なども試す
+            cap.set(cv2.CAP_PROP_EXPOSURE, 750)
+            # cap.set(cv2.CAP_PROP_EXPOSURE_DYNAMIC_FRAMERATE, 0)  # OpenCV未対応
 
             ret, img = cap.read()
             cap.release()
