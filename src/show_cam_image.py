@@ -1,12 +1,12 @@
 import io
 import imageio.v2 as imageio
 import cv2
-from linuxpy.video.device import Device, BufferType, Capability, VideoCapture, Memory
+from linuxpy.video.device import Device, BufferType, Capability, VideoCapture, Memory, FrameReader
 
 with Device.from_id(2) as cam:
     # cam.set_format(width=640, height=480, buffer_type=BufferType.VIDEO_CAPTURE, pixel_format="MJPG")
 
-    capture = VideoCapture(cam)
+    capture = FrameReader(cam, raw_read=True)
     capture.set_format(width=640, height=480)
 
     with capture:

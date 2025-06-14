@@ -2,6 +2,7 @@ import io
 import os
 import pathlib
 import sys
+import time
 
 import cv2
 import imageio.v2 as imageio
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     while end_count < frame_limit:
         # YOLO推論（画像1枚ごと）
 
-        with Device.from_id(0) as cam:
+        with Device.from_id(2) as cam:
             # cam.set_format(width=640, height=480, buffer_type=BufferType.VIDEO_CAPTURE, pixel_format="MJPG")
 
             capture = VideoCapture(cam)
@@ -39,9 +40,19 @@ if __name__ == "__main__":
             with capture:
                 for frame in capture:
                     img = None
+
                     try:
                         img = imageio.imread(io.BytesIO(frame.data))
                         print(f"フレーム取得: {frame.frame_nb}, サイズ: {len(frame.data)} バイト")
+
+                        # imgの明るさを出力
+                        brightness = cv2.mean(img)[0]
+                        print(f"フレームの明るさ: {brightness:.2f}")
+
+                        if brightness < 50:
+                            print("フレームが暗すぎるためスキップします。")
+                            continue
+
                     except BaseException as e:
                         print(f"Error reading frame: {e}")
                         continue
