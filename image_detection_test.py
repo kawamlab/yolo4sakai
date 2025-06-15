@@ -5,10 +5,8 @@ import sys
 import time
 
 import cv2
-import imageio.v2 as imageio
-from linuxpy.video.device import BufferType, Device, VideoCapture
-
 from src.yolo_detector import YoloDetector, YoloModel
+from src.camera_capture_linuxpy import CameraCaptureLinuxpy
 
 sys.modules["pathlib._local"] = pathlib
 if os.name == "nt":
@@ -22,43 +20,13 @@ if __name__ == "__main__":
     # YOLO Detectorの初期化
     detector = YoloDetector(model_type=YoloModel.BLUE_NEW, conf=0.55, iou=0.45)
 
-    # 動画ファイルのパス
-    video_path = str(root / "samples" / "blue.mp4")
-    # camera = cv2.VideoCapture(video_path)
-    end_count = 0
     frame_limit = 10
+    end_count = 0
+    cam_id = 2  # カメラ番号を指定
+    camera = CameraCaptureLinuxpy(cam_id)
 
     while end_count < frame_limit:
-        # YOLO推論（画像1枚ごと）
-
-        with Device.from_id(2) as cam:
-            # cam.set_format(width=640, height=480, buffer_type=BufferType.VIDEO_CAPTURE, pixel_format="MJPG")
-
-            capture = VideoCapture(cam)
-            capture.set_format(width=640, height=480)
-
-            with capture:
-                for frame in capture:
-                    img = None
-
-                    try:
-                        img = imageio.imread(io.BytesIO(frame.data))
-                        print(f"フレーム取得: {frame.frame_nb}, サイズ: {len(frame.data)} バイト")
-
-                        # imgの明るさを出力
-                        brightness = cv2.mean(img)[0]
-                        print(f"フレームの明るさ: {brightness:.2f}")
-
-                        if brightness < 50:
-                            print("フレームが暗すぎるためスキップします。")
-                            continue
-
-                    except BaseException as e:
-                        print(f"Error reading frame: {e}")
-                        continue
-
-                    break
-
+        img = camera.get_image()
         if img is None:
             print("No image data found, skipping frame.")
             end_count += 1
@@ -66,11 +34,7 @@ if __name__ == "__main__":
 
         print(f"取得した画像の形状: {img.shape}")
 
-        # 色をBGRからRGBに変換
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-
-        print(f"フレーム取得: {frame.frame_nb}, サイズ: {len(frame.data)} バイト")
-
+        # YOLO推論
         results = detector.detect_on_image(img, show=True)
 
         print(f"検出された物体の個数: {len(results)}")
@@ -79,8 +43,4 @@ if __name__ == "__main__":
                 f"物体 {det.index}: クラス {det.label}, 信頼度 {det.confidence:.2f}, "
                 f"座標 ({det.x1:.0f}, {det.y1:.0f}) - ({det.x2:.0f}, {det.y2:.0f})"
             )
-
-        if cv2.waitKey(1) == 27:
-            break
-
-    cv2.destroyAllWindows()
+        end_count += 1
