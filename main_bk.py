@@ -3,7 +3,7 @@ import pathlib
 import sys
 import time
 from collections import Counter
-
+from src.camera_capture_linuxpy import CameraCaptureLinuxpy
 from gpio.valve import AutoFactory
 from src.yolo_detector import YoloDetector, YoloModel
 
@@ -25,6 +25,8 @@ if __name__ == "__main__":
     af.cam.off()
     af.blower.off()
 
+    camera = CameraCaptureLinuxpy(0)  # カメラ番号を指定
+
     while True:
         # パーツを検知エリアに配置
         time.sleep(1)  # TODO: fix
@@ -38,7 +40,12 @@ if __name__ == "__main__":
         for i in range(N):
             results = []
             while not results:
-                results = detector.detect_on_image(0, show=show)
+                img = camera.get_image()
+                if img is None:
+                    print(f"画像取得失敗 ({i + 1}/{N}) 再取得します...")
+                    time.sleep(0.5)
+                    continue
+                results = detector.detect_on_image(img, show=show)
                 if not results:
                     print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
                     time.sleep(0.5)

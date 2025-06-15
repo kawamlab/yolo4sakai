@@ -18,11 +18,11 @@ if __name__ == "__main__":
     root = pathlib.Path(__file__).resolve(strict=True).parent
 
     # YOLO Detectorの初期化
-    detector = YoloDetector(model_type=YoloModel.BLUE_NEW, conf=0.55, iou=0.45)
+    detector = YoloDetector(model_type=YoloModel.BLACK, conf=0.55, iou=0.45)
 
     frame_limit = 10
     end_count = 0
-    cam_id = 2  # カメラ番号を指定
+    cam_id = 0  # カメラ番号を指定
     camera = CameraCaptureLinuxpy(cam_id)
 
     while end_count < frame_limit:
