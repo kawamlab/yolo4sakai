@@ -15,6 +15,7 @@ class CameraCaptureLinuxpy:
         # set-camera.shの実行
         script_path = pathlib.Path(__file__).resolve().parent.parent / "src" / "set-camera.sh"
         subprocess.run(["bash", str(script_path)])
+        print("Camera settings applied from set-camera.sh")
         self.cam_id = cam_id
 
     def get_image(self):
