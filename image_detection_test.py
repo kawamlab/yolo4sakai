@@ -18,11 +18,11 @@ if __name__ == "__main__":
     root = pathlib.Path(__file__).resolve(strict=True).parent
 
     # YOLO Detectorの初期化
-    detector = YoloDetector(model_type=YoloModel.BLACK, conf=0.55, iou=0.45, reload=True)
+    detector = YoloDetector(model_type=YoloModel.BLUE_NEW, conf=0.55, iou=0.45, reload=False)
 
     frame_limit = 10
     end_count = 0
-    cam_id = 0  # カメラ番号を指定
+    cam_id = 2  # カメラ番号を指定
     camera = CameraCaptureLinuxpy(cam_id)
 
     while end_count < frame_limit:
@@ -34,8 +34,11 @@ if __name__ == "__main__":
 
         print(f"取得した画像の形状: {img.shape}")
 
+        # if blue BGR2RGB
+        cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
         # YOLO推論
-        results = detector.detect_on_image(img, show=True)
+        results = detector.detect_on_image(img, show=False)
 
         print(f"検出された物体の個数: {len(results)}")
         for det in results:
