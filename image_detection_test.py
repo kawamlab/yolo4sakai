@@ -43,4 +43,3 @@ if __name__ == "__main__":
                 f"物体 {det.index}: クラス {det.label}, 信頼度 {det.confidence:.2f}, "
                 f"座標 ({det.x1:.0f}, {det.y1:.0f}) - ({det.x2:.0f}, {det.y2:.0f})"
             )
-        end_count += 1
