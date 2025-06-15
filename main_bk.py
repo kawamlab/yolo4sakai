@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
         else:
             print(f"物体 {part.label} が検出されました。通過させます。")
-            time.sleep(3)  # TODO: fix
+            time.sleep(1)  # TODO: fix
 
         af.cam.off()
 
