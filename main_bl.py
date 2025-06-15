@@ -4,6 +4,8 @@ import sys
 import time
 from collections import Counter
 
+import cv2
+from src.camera_capture_linuxpy import CameraCaptureLinuxpy
 from gpio.valve import AutoFactory
 from src.yolo_detector import YoloDetector, YoloModel
 
@@ -17,19 +19,19 @@ show = True  # 物体検出結果を表示するかどうか
 
 if __name__ == "__main__":
     af = AutoFactory()
-    detector = YoloDetector(model_type=YoloModel.BLUE)
+    detector = YoloDetector(model_type=YoloModel.BLUE_NEW)
 
     # BKBなら通す
-    through_direction = "BLB"  # TODO: fix
+    through_direction = "BLF"  # TODO: fix
 
     af.cam.off()
     af.blower.off()
 
+    camera = CameraCaptureLinuxpy(0)  # カメラ番号を指定
+
     while True:
         # パーツを検知エリアに配置
-        af.cam.on()
-        time.sleep(3)  # TODO: fix
-        print("カムを引き、パーツを検知エリアに配置しました。")
+        time.sleep(1)  # TODO: fix
 
         # 物体検出を実行
         # 物体検出をN回繰り返して確度を高める
@@ -40,7 +42,13 @@ if __name__ == "__main__":
         for i in range(N):
             results = []
             while not results:
-                results = detector.detect_on_image(0, show=show)
+                img = camera.get_image()
+                if img is None:
+                    print(f"画像取得失敗 ({i + 1}/{N}) 再取得します...")
+                    time.sleep(0.5)
+                    continue
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)  # BGRに変換
+                results = detector.detect_on_image(img, show=show)
                 if not results:
                     print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
                     time.sleep(0.5)
@@ -62,16 +70,18 @@ if __name__ == "__main__":
         part = next(r for r in detection_results if r.label == most_common_label)
 
         # パーツを通過させる
-        af.cam.off()
+        af.cam.on()
 
         if part.label != through_direction:
             print(f"物体 {part.label} が検出されました。弾きます。")
             time.sleep(1)  # TODO: fix
-            af.blowout()
+            af.blowout(count=5)
 
         else:
             print(f"物体 {part.label} が検出されました。通過させます。")
-            time.sleep(3)  # TODO: fix
+            time.sleep(1)  # TODO: fix
+
+        af.cam.off()
 
     # # read from camera
     # while True:
