@@ -15,7 +15,7 @@ else:
 if __name__ == "__main__":
     cam_id = 0  # カメラ番号を指定
     camera = CameraCaptureLinuxpy(cam_id)
-    frame_limit = 250
+    frame_limit = 30
     # 開始時に名前を入力
     name = input("保存する画像のベース名を入力してください: ").strip()
     if not name:
