@@ -72,7 +72,7 @@ if __name__ == "__main__":
         if part.label != through_direction:
             print(f"物体 {part.label} が検出されました。弾きます。")
             time.sleep(1)  # TODO: fix
-            af.blowout()
+            af.blowout(count=5)
 
         else:
             print(f"物体 {part.label} が検出されました。通過させます。")
