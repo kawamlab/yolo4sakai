@@ -25,7 +25,7 @@ class DetectionResult(BaseModel):
 
 
 class YoloDetector:
-    def __init__(self, model_type: YoloModel, conf: float = 0.55, iou: float = 0.45) -> None:
+    def __init__(self, model_type: YoloModel, conf: float = 0.55, iou: float = 0.45, reload: bool = False) -> None:
         """
         YOLOモデルの初期化
         model_type: YoloModel Enum（BLACK or BLUE）
@@ -40,6 +40,7 @@ class YoloDetector:
             path=str(root / "models" / model_type.value),
             source="local",
             autoshape=True,  # AutoShapeラッパーを有効化
+            force_reload=reload,
         )
         self.conf = conf
         self.iou = iou
