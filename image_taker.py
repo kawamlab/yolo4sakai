@@ -31,7 +31,7 @@ if __name__ == "__main__":
             print(f"No image data found, skipping frame {i + 1}.")
             continue
         filename = save_dir / f"{name}_{i + 1:04d}.jpg"
-        cv2.imwrite(str(filename), cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+        cv2.imwrite(str(filename), img)
         print(f"Saved: {filename}")
         cv2.imshow("Camera", img)
         if cv2.waitKey(1) == 27:  # ESCで中断可
