@@ -27,9 +27,7 @@ if __name__ == "__main__":
 
     while True:
         # パーツを検知エリアに配置
-        af.cam.on()
-        time.sleep(3)  # TODO: fix
-        print("カムを引き、パーツを検知エリアに配置しました。")
+        time.sleep(1)  # TODO: fix
 
         # 物体検出を実行
         # 物体検出をN回繰り返して確度を高める
@@ -62,7 +60,7 @@ if __name__ == "__main__":
         part = next(r for r in detection_results if r.label == most_common_label)
 
         # パーツを通過させる
-        af.cam.off()
+        af.cam.on()
 
         if part.label != through_direction:
             print(f"物体 {part.label} が検出されました。弾きます。")
@@ -72,6 +70,8 @@ if __name__ == "__main__":
         else:
             print(f"物体 {part.label} が検出されました。通過させます。")
             time.sleep(3)  # TODO: fix
+
+        af.cam.off()
 
     # # read from camera
     # while True:
