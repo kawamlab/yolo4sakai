@@ -7,7 +7,7 @@ from gpiozero import DigitalOutputDevice
 
 class AutoFactory:
     def __init__(self):
-        self.cam = DigitalOutputDevice("26")
+        self.cam = DigitalOutputDevice("16")
         self.blower = DigitalOutputDevice("12")
 
         atexit.register(self.cleanup)
@@ -40,9 +40,6 @@ class AutoFactory:
         print("starting valve test...")
         print(f"Valve 1: {self.cam.pin}, Valve 2: {self.blower.pin}")
         print("Turning on valves...")
-
-        # self.blowout()
-        pause()
 
         self.cam.on()
         self.blower.on()
