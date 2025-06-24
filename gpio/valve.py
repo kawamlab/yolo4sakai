@@ -7,7 +7,7 @@ from gpiozero import DigitalOutputDevice
 
 class AutoFactory:
     def __init__(self):
-        self.cam = DigitalOutputDevice("16")
+        self.cam = DigitalOutputDevice("1")
         self.blower = DigitalOutputDevice("12")
 
         atexit.register(self.cleanup)
