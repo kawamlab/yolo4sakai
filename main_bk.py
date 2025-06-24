@@ -13,7 +13,14 @@ if os.name == "nt":
 else:
     pathlib.WindowsPath = pathlib.PosixPath
 
-show = True  # 物体検出結果を表示するかどうか
+def is_gui_available() -> bool:
+    return os.environ.get("DISPLAY") is not None
+
+if is_gui_available():
+    show = True  # GUIが利用可能なら物体検出結果を表示する
+else:
+    print("GUI is not available. Disabling object detection display.")
+    show = False  # GUIが利用できない場合は物体検出結果を表示しない
 
 if __name__ == "__main__":
     af = AutoFactory()
