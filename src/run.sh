@@ -3,9 +3,9 @@
 cd ~/programs/yolo4sakai
 
 HOSTNAME=$(hostname)
-if [[ "$HOSTNAME" == *blue* ]]; then
+if echo "$HOSTNAME" | grep -q blue; then
     uv run main_bl.py
-elif [[ "$HOSTNAME" == *black* ]]; then
+elif echo "$HOSTNAME" | grep -q black; then
     uv run main_bk.py
 else
     echo "ホスト名に 'blue' も 'black' も含まれていません: $HOSTNAME"
