@@ -15,8 +15,10 @@ if os.name == "nt":
 else:
     pathlib.WindowsPath = pathlib.PosixPath
 
+
 def is_gui_available() -> bool:
     return os.environ.get("DISPLAY") is not None
+
 
 if is_gui_available():
     show = True  # GUIが利用可能なら物体検出結果を表示する
@@ -36,65 +38,60 @@ if __name__ == "__main__":
 
     camera = CameraCaptureLinuxpy(0)  # カメラ番号を指定
 
-    while True:
-        # パーツを検知エリアに配置
-        time.sleep(1)  # TODO: fix
-
-        # 物体検出を実行
-        # 物体検出をN回繰り返して確度を高める
-        N = 3  # 検出回数
-        CONF_THRESHOLD = 0.6  # 信頼度の閾値（例: 0.6）
-        detection_results = []
-        print("物体検出を実行中...")
-        for i in range(N):
-            results = []
-            while not results:
-                img = camera.get_image()
-                if img is None:
-                    print(f"画像取得失敗 ({i + 1}/{N}) 再取得します...")
-                    time.sleep(0.5)
-                    continue
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)  # BGRに変換
-                results = detector.detect_on_image(img, show=show)
-                if not results:
-                    print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
-                    time.sleep(0.5)
-            # 信頼度が閾値以上のものだけ追加
-            detection_results.extend([r for r in results if r.confidence >= CONF_THRESHOLD])
-            time.sleep(0.2)  # 連続検出時の間隔
-
-        label_counter = Counter([r.label for r in detection_results])
-        if not label_counter:
-            print(f"N回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
-            continue
-        most_common_label, count = label_counter.most_common(1)[0]
-        # 最頻ラベルの平均信頼度
-        confidences = [r.confidence for r in detection_results if r.label == most_common_label]
-        avg_conf = sum(confidences) / len(confidences)
-        print(f"最頻ラベル: {most_common_label} (出現回数: {count}/{N}), 平均信頼度: {avg_conf:.2f}")
-
-        # 最頻ラベルの最初のDetectionResultをpartとする
-        part = next(r for r in detection_results if r.label == most_common_label)
-
-        # パーツを通過させる
-        af.cam.on()
-
-        if part.label != through_direction:
-            print(f"物体 {part.label} が検出されました。弾きます。")
-            time.sleep(1)  # TODO: fix
-            af.blowout(count=5)
-
-        else:
-            print(f"物体 {part.label} が検出されました。通過させます。")
+    try:
+        while True:
+            # パーツを検知エリアに配置
             time.sleep(1)  # TODO: fix
 
-        af.cam.off()
+            # 物体検出を実行
+            # 物体検出をN回繰り返して確度を高める
+            N = 3  # 検出回数
+            CONF_THRESHOLD = 0.6  # 信頼度の閾値（例: 0.6）
+            detection_results = []
+            print("物体検出を実行中...")
+            for i in range(N):
+                results = []
+                while not results:
+                    img = camera.get_image()
+                    if img is None:
+                        print(f"画像取得失敗 ({i + 1}/{N}) 再取得します...")
+                        time.sleep(0.5)
+                        continue
+                    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)  # BGRに変換
+                    results = detector.detect_on_image(img, show=show)
+                    if not results:
+                        print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
+                        time.sleep(0.5)
+                # 信頼度が閾値以上のものだけ追加
+                detection_results.extend([r for r in results if r.confidence >= CONF_THRESHOLD])
+                time.sleep(0.2)  # 連続検出時の間隔
 
-    # # read from camera
-    # while True:
-    #     results = detector.detect_on_image(0, show=True)
-    #     for result in results:
-    #         print(
-    #             f"物体 {result.index}: クラス {result.label}, 信頼度 {result.confidence:.2f}, "
-    #             f"座標 ({result.x1:.0f}, {result.y1:.0f}) - ({result.x2:.0f}, {result.y2:.0f})"
-    #         )
+            label_counter = Counter([r.label for r in detection_results])
+            if not label_counter:
+                print(f"N回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
+                continue
+            most_common_label, count = label_counter.most_common(1)[0]
+            # 最頻ラベルの平均信頼度
+            confidences = [r.confidence for r in detection_results if r.label == most_common_label]
+            avg_conf = sum(confidences) / len(confidences)
+            print(f"最頻ラベル: {most_common_label} (出現回数: {count}/{N}), 平均信頼度: {avg_conf:.2f}")
+
+            # 最頻ラベルの最初のDetectionResultをpartとする
+            part = next(r for r in detection_results if r.label == most_common_label)
+
+            # パーツを通過させる
+            af.cam.on()
+
+            if part.label != through_direction:
+                print(f"物体 {part.label} が検出されました。弾きます。")
+                time.sleep(1)  # TODO: fix
+                af.blowout(count=5)
+
+            else:
+                print(f"物体 {part.label} が検出されました。通過させます。")
+                time.sleep(1)  # TODO: fix
+
+            af.cam.off()
+
+    except KeyboardInterrupt:
+        print("\nCtrl+Cが押されたため、処理を終了します。")
