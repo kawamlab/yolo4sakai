@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=部品振り分けプログラム
+Exec=lxterminal -e "/home/klab/programs/yolo4sakai/src/run.sh"
+Icon=utilities-terminal
+Terminal=true
