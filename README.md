@@ -2,13 +2,15 @@
 
 ## 概要
 
-本プログラムは、カメラで取得した画像をもとに部品を自動で判別し、GPIO制御によって部品の振り分けを行うシステムです。Raspberry PiなどのLinux環境で動作します。
+本プログラムは、カメラで取得した画像をもとに部品を自動で判別し、GPIO制御によって部品の振り分けを行うシステムです。Raspberry Pi5で動作します。
 
 ## インストール方法
 
+uvを使用できる環境を構築してください。
 ```bash
 uv venv --system-site-packages .venv
 uv pip install -r requirements.txt
+sh src/create_symlink.sh
 ```
 
 ## 使い方
