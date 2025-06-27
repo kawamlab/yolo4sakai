@@ -96,6 +96,17 @@ sudo nano /etc/dphys-swapfile
 # CONF_SWAPSIZE=100を2048に変更。
 ```
 
+```bash
+# /etc/fstab からスワップや一時領域の自動マウントを削除
+sudo nano /etc/fstab
+```
+
+```config
+# 以下の行を削除
+tmpfs /tmp tmpfs defaults,size=64m,noatime,mode=1777 0 0
+tmpfs /var/tmp tmpfs defaults,size=32m,noatime,mode=1777 0 0
+```
+
 ## 使い方
 
 1. 必要なハードウェア（カメラ、GPIO制御用回路）を接続してください。
