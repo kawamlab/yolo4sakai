@@ -40,8 +40,8 @@ if __name__ == "__main__":
 
     try:
         while True:
-            # パーツを検知エリアに配置
-            time.sleep(1)  # TODO: fix
+            # パーツが検知エリアに入るまで待機
+            time.sleep(1)  # TODO: 時間調整
 
             # 物体検出を実行
             # 物体検出をN回繰り返して確度を高める
@@ -82,14 +82,23 @@ if __name__ == "__main__":
             # パーツを通過させる
             af.cam.on()
 
+            # 物体が通過するまで待機
+            # センサーが遮られるまで待機
+            af.intr_sensor.wait_for_inactive()
+
+            # もしかしたらここにtime.sleepが必要かもしれない
+
+            # センサーが遮られた後、物体が通過するまで待機
+            af.intr_sensor.wait_for_active()
+
             if part.label != through_direction:
                 print(f"物体 {part.label} が検出されました。弾きます。")
-                time.sleep(1)  # TODO: fix
-                af.blowout(count=5)
+                time.sleep(0)  # TODO: 時間調整
+                af.blowout(count=3)
 
             else:
                 print(f"物体 {part.label} が検出されました。通過させます。")
-                time.sleep(1)  # TODO: fix
+                time.sleep(0)  # TODO: 時間調整
 
             af.cam.off()
 

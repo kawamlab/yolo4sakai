@@ -2,13 +2,14 @@ import atexit
 import time
 from signal import pause
 
-from gpiozero import DigitalOutputDevice
+from gpiozero import DigitalOutputDevice, DigitalInputDevice
 
 
 class AutoFactory:
     def __init__(self):
         self.cam = DigitalOutputDevice("1")
         self.blower = DigitalOutputDevice("12")
+        self.intr_sensor = DigitalInputDevice("7", pull_up=True, bounce_time=0.05)
 
         atexit.register(self.cleanup)
 
@@ -34,6 +35,7 @@ class AutoFactory:
     def cleanup(self):
         self.cam.off()
         self.blower.off()
+        self.intr_sensor.close()
         print("GPIO pins cleaned up.")
 
     def test_valve(self):
@@ -49,6 +51,21 @@ class AutoFactory:
                 time.sleep(0.5)
                 self.cam.toggle()
                 self.blower.toggle()
+        except KeyboardInterrupt:
+            print("Exiting...")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def test_intr(self):
+        print("Waiting for interrupt on sensor...")
+
+        try:
+            self.intr_sensor.wait_for_inactive()
+            print("Interrupt sensor deactivated!")
+
+            self.intr_sensor.wait_for_active()
+            print("Interrupt sensor activated!")
+
         except KeyboardInterrupt:
             print("Exiting...")
         except Exception as e:
