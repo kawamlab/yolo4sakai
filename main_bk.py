@@ -76,12 +76,12 @@ if __name__ == "__main__":
             # 最頻ラベルの最初のDetectionResultをpartとする
             part = next(r for r in detection_results if r.label == most_common_label)
 
-            # パーツを通過させる
-            af.cam.on()
-
             # 物体が通過するまで待機
             # センサーが遮られるまで待機
             af.intr_sensor.wait_for_inactive()
+
+            # パーツを通過させる
+            af.cam.on()
 
             # もしかしたらここにtime.sleepが必要かもしれない
 
