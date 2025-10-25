@@ -44,7 +44,7 @@ if __name__ == "__main__":
             # 物体検出を実行
             # 物体検出をN回繰り返して確度を高める
             N = 3  # 検出回数
-            CONF_THRESHOLD = 0.6  # 信頼度の閾値（例: 0.6）
+            CONF_THRESHOLD = 0.5  # 信頼度の閾値（例: 0.6）
             detection_results = []
             print("物体検出を実行中...")
             for i in range(N):
@@ -62,6 +62,12 @@ if __name__ == "__main__":
 
                 # r.x1が500以上のものを除外
                 results = [r for r in results if r.x1 < 500]
+
+                # r.x2が100以下のものを除外
+                results = [r for r in results if r.x2 > 100]
+
+                # r.y1が100以上のものを除外
+                results = [r for r in results if r.y1 < 100]
 
                 # 信頼度が閾値以上のものだけ追加
                 detection_results.extend([r for r in results if r.confidence >= CONF_THRESHOLD])
