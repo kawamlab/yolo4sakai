@@ -59,11 +59,20 @@ if __name__ == "__main__":
                     if not results:
                         print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
                         time.sleep(0.5)
+
+                # r.x1が500以上のものを除外
+                results = [r for r in results if r.x1 < 500]
+
                 # 信頼度が閾値以上のものだけ追加
                 detection_results.extend([r for r in results if r.confidence >= CONF_THRESHOLD])
                 time.sleep(0.2)  # 連続検出時の間隔
 
+            # detection_resultsの全座標を出力
+            for r in detection_results:
+                print(f"検出ラベル: {r.label}, 信頼度: {r.confidence:.2f}, 座標: {r}")
+
             label_counter = Counter([r.label for r in detection_results])
+
             if not label_counter:
                 print(f"N回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
                 continue
