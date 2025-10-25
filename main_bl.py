@@ -31,11 +31,12 @@ if __name__ == "__main__":
     detector = YoloDetector(model_type=YoloModel.BLUE_NEW)
 
     # BKBなら通す
+    # through_direction = "BLB"  # TODO: fix
     through_direction = "BLF"  # TODO: fix
 
     af.cam.off()
     af.blower.off()
-
+        
     camera = CameraCaptureLinuxpy(0)  # カメラ番号を指定
 
     try:
@@ -79,17 +80,23 @@ if __name__ == "__main__":
             # 最頻ラベルの最初のDetectionResultをpartとする
             part = next(r for r in detection_results if r.label == most_common_label)
 
+            # パーツを通過させる
+            print(f"物体 {part.label} を通過させます。")
+            af.cam.on()          
+            
             # 物体が通過するまで待機
             # センサーが遮られるまで待機
-            af.intr_sensor.wait_for_inactive()
-
-            # パーツを通過させる
-            af.cam.on()
+            print("物体がセンサーを遮るのを待機中...")
+            af.intr_sensor.wait_for_active()
+            
+            # カムをオフにする
+            af.cam.off()
 
             # もしかしたらここにtime.sleepが必要かもしれない
 
             # センサーが遮られた後、物体が通過するまで待機
-            af.intr_sensor.wait_for_active()
+            print("物体がセンサーを通過するのを待機中...")
+            af.intr_sensor.wait_for_inactive()
 
             if part.label != through_direction:
                 print(f"物体 {part.label} が検出されました。弾きます。")
@@ -100,7 +107,7 @@ if __name__ == "__main__":
                 print(f"物体 {part.label} が検出されました。通過させます。")
                 time.sleep(0)  # TODO: 時間調整
 
-            af.cam.off()
+            # af.cam.off()
 
     except KeyboardInterrupt:
         print("\nCtrl+Cが押されたため、処理を終了します。")
