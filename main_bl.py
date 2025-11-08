@@ -30,13 +30,13 @@ if __name__ == "__main__":
     af = AutoFactory()
     detector = YoloDetector(model_type=YoloModel.BLUE_NEW)
 
-    # BKBなら通す
+    # BLFなら通す
     # through_direction = "BLB"  # TODO: fix
     through_direction = "BLF"  # TODO: fix
 
     af.cam.off()
     af.blower.off()
-        
+
     camera = CameraCaptureLinuxpy(0)  # カメラ番号を指定
 
     try:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
             # 物体検出を実行
             # 物体検出をN回繰り返して確度を高める
-            N = 3  # 検出回数
+            N = 2  # 検出回数
             CONF_THRESHOLD = 0.6  # 信頼度の閾値（例: 0.6）
             detection_results = []
             print("物体検出を実行中...")
@@ -63,13 +63,29 @@ if __name__ == "__main__":
                     if not results:
                         print(f"No objects detected. ({i + 1}/{N}) 再検出します...")
                         time.sleep(0.5)
+
+                # r.x1が500以上のものを除外
+                results = [r for r in results if r.x1 < 500]
+
+                # r.x2が100以下のものを除外
+                results = [r for r in results if r.x2 > 100]
+
+                # r.y1が100以上のものを除外
+                results = [r for r in results if r.y1 < 100]
+
+                # BLBとBLFがどちらもある場合、BLBを優先する
+                labels = [r.label for r in results]
+                if "BLB" in labels and "BLF" in labels:
+                    results = [r for r in results if r.label != "BLF"]
+                    print("Both BLB and BLF detected. Prioritizing BLB.")
+
                 # 信頼度が閾値以上のものだけ追加
                 detection_results.extend([r for r in results if r.confidence >= CONF_THRESHOLD])
                 time.sleep(0.2)  # 連続検出時の間隔
 
             label_counter = Counter([r.label for r in detection_results])
             if not label_counter:
-                print(f"N回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
+                print(f"{N}回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
                 continue
             most_common_label, count = label_counter.most_common(1)[0]
             # 最頻ラベルの平均信頼度
@@ -82,13 +98,13 @@ if __name__ == "__main__":
 
             # パーツを通過させる
             print(f"物体 {part.label} を通過させます。")
-            af.cam.on()          
-            
+            af.cam.on()
+
             # 物体が通過するまで待機
             # センサーが遮られるまで待機
             print("物体がセンサーを遮るのを待機中...")
             af.intr_sensor.wait_for_active()
-            
+
             # カムをオフにする
             af.cam.off()
 
