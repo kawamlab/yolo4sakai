@@ -42,11 +42,11 @@ if __name__ == "__main__":
     try:
         while True:
             # パーツが検知エリアに入るまで待機
-            time.sleep(1)  # TODO: 時間調整
+            time.sleep(0.2)  # TODO: 時間調整
 
             # 物体検出を実行
             # 物体検出をN回繰り返して確度を高める
-            N = 2  # 検出回数
+            N = 1  # 検出回数
             CONF_THRESHOLD = 0.6  # 信頼度の閾値（例: 0.6）
             detection_results = []
             print("物体検出を実行中...")
@@ -84,6 +84,7 @@ if __name__ == "__main__":
                 time.sleep(0.2)  # 連続検出時の間隔
 
             label_counter = Counter([r.label for r in detection_results])
+
             if not label_counter:
                 print(f"{N}回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
                 continue

@@ -39,11 +39,11 @@ if __name__ == "__main__":
     try:
         while True:
             # パーツが検知エリアに入るまで待機
-            time.sleep(1)  # TODO: 時間調整
+            time.sleep(0.2)  # TODO: 時間調整
 
             # 物体検出を実行
             # 物体検出をN回繰り返して確度を高める
-            N = 3  # 検出回数
+            N = 1  # 検出回数
             CONF_THRESHOLD = 0.5  # 信頼度の閾値（例: 0.6）
             detection_results = []
             print("物体検出を実行中...")
@@ -91,21 +91,21 @@ if __name__ == "__main__":
             # 最頻ラベルの最初のDetectionResultをpartとする
             part = next(r for r in detection_results if r.label == most_common_label)
 
+            # パーツを通過させる
+            print(f"物体 {part.label} を通過させます。")
+            af.cam.on()
+
             # 物体が通過するまで待機
             # センサーが遮られるまで待機
             af.intr_sensor.wait_for_inactive()
 
-            # パーツを通過させる
-            print(f"物体 {part.label} を通過させます。")
-            af.cam.on()          
-            
+            # カムをオフにする
+            af.cam.off()
+
             # 物体が通過するまで待機
             # センサーが遮られるまで待機
             print("物体がセンサーを遮るのを待機中...")
             af.intr_sensor.wait_for_active()
-            
-            # カムをオフにする
-            af.cam.off()
 
             # もしかしたらここにtime.sleepが必要かもしれない
 
