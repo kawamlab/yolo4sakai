@@ -80,7 +80,7 @@ if __name__ == "__main__":
             label_counter = Counter([r.label for r in detection_results])
 
             if not label_counter:
-                print(f"N回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
+                print(f"{N}回検出しても信頼度{CONF_THRESHOLD}以上の物体が見つかりませんでした。")
                 continue
             most_common_label, count = label_counter.most_common(1)[0]
             # 最頻ラベルの平均信頼度
@@ -97,21 +97,11 @@ if __name__ == "__main__":
 
             # 物体が通過するまで待機
             # センサーが遮られるまで待機
+            print("物体がセンサーを遮るのを待機中...")
             af.intr_sensor.wait_for_inactive()
 
             # カムをオフにする
             af.cam.off()
-
-            # 物体が通過するまで待機
-            # センサーが遮られるまで待機
-            print("物体がセンサーを遮るのを待機中...")
-            af.intr_sensor.wait_for_active()
-
-            # もしかしたらここにtime.sleepが必要かもしれない
-
-            # センサーが遮られた後、物体が通過するまで待機
-            print("物体がセンサーを通過するのを待機中...")
-            af.intr_sensor.wait_for_inactive()
 
             if part.label != through_direction:
                 print(f"物体 {part.label} が検出されました。弾きます。")
@@ -122,6 +112,9 @@ if __name__ == "__main__":
                 print(f"物体 {part.label} が検出されました。通過させます。")
                 time.sleep(0)  # TODO: 時間調整
 
-            # af.cam.off()
+                # センサーが遮られた後、物体が通過するのを待機
+                print("物体がセンサーを通過するのを待機中...")
+                af.intr_sensor.wait_for_active()
+
     except KeyboardInterrupt:
         print("\nCtrl+Cが押されたため、処理を終了します。")
