@@ -22,7 +22,7 @@ class AutoFactory:
 
         self.cam.off()
 
-    def blowout(self, on_time=0.5, off_time=0.5, count=3, background=True):
+    def blowout(self, on_time: float = 0.5, off_time: float = 0.5, count: int | None = 3, background: bool = True):
         # brow three times
         print("Starting blowout...")
         self.blower.blink(

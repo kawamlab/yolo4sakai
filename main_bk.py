@@ -106,15 +106,19 @@ if __name__ == "__main__":
             if part.label != through_direction:
                 print(f"物体 {part.label} が検出されました。弾きます。")
                 time.sleep(0)  # TODO: 時間調整
-                af.blowout(count=3)
+                # 吹き飛ぶまで断続的にブローする
+                af.blowout(count=None)
 
             else:
                 print(f"物体 {part.label} が検出されました。通過させます。")
                 time.sleep(0)  # TODO: 時間調整
 
-                # センサーが遮られた後、物体が通過するのを待機
-                print("物体がセンサーを通過するのを待機中...")
-                af.intr_sensor.wait_for_active()
+            # 吹き飛ぶor通過するのを待機
+            print("物体がセンサーを通過するのを待機中...")
+            af.intr_sensor.wait_for_active()
+
+            # ブロアーをオフにする
+            af.blower.off()
 
     except KeyboardInterrupt:
         print("\nCtrl+Cが押されたため、処理を終了します。")
