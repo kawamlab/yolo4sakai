@@ -2,8 +2,13 @@ import pathlib
 import cv2
 import numpy as np
 
+## 青色の円を検出してYOLO形式でアノテーションを自動生成するスクリプト
+## データ構造は root/dataset_b/train/ に画像がある想定
+## BLB_で始まるファイル名はクラスID 1、BLF_で始まるファイル名はクラスID 0 として扱う
+
 # 画像ディレクトリ
-IMG_DIR = pathlib.Path(r"c:/Users/sone.NAKAZAWA23/programs/yolo4sakai/dataset_b/train")
+# IMG_DIR = pathlib.Path(__file__).resolve().parent.parent / "dataset_b" / "images" / "train"
+IMG_DIR = pathlib.Path(__file__).resolve().parent.parent / "dataset_b" / "images" / "val"
 
 
 # ファイル名からクラスIDを決定（例: BLB_ → 0, BLF_ → 1 など。必要に応じて修正）
@@ -58,15 +63,20 @@ def main():
         img_draw = img.copy()
         cv2.rectangle(img_draw, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cv2.putText(img_draw, f"class: {class_id}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-        cv2.imshow("Result", img_draw)
+        # cv2.imshow("Result", img_draw)
         print(
             f"YOLO: {class_id} {(x + w / 2) / img.shape[1]:.6f} {(y + h / 2) / img.shape[0]:.6f} {w / img.shape[1]:.6f} {h / img.shape[0]:.6f}"
         )
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        # 保存はコメントアウト
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+        # 保存
         # txt_path = img_path.with_suffix(".txt")
-        # write_yolo_annotation(txt_path, class_id, bbox, img.shape)
+        # txt_path = IMG_DIR.parents[1] / "labels" / "train" / img_path.with_suffix(".txt").name
+        txt_path = IMG_DIR.parents[1] / "labels" / "val" / img_path.with_suffix(".txt").name
+        txt_path.parent.mkdir(parents=True, exist_ok=True)
+
+        write_yolo_annotation(txt_path, class_id, bbox, img.shape)
         print(f"Annotated: {img_path.name}")
 
 

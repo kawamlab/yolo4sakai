@@ -165,3 +165,21 @@ sh src/run.sh
 - レベル変換基盤から出ている長い線の結んでいる方: センサの黒線
 
 詳細は[センサ仕様](https://www.fa.omron.co.jp/product/item/E3Z-T61_2M/ja/pdf/)の6ページ目を参照してください。
+
+## 自動アノテーション
+
+`src/auto_annotate.py`を実行すると、青色の円を検出してYOLO形式でアノテーションを自動生成します。 データ構造は `root/dataset_b/images/` に画像がある想定です。  
+`BLB_`で始まるファイル名はクラスID 1、`BLF_`で始まるファイル名はクラスID 0 として扱います。
+ラベルは `root/dataset_b/labels/` に保存されます。
+
+## 学習コマンド
+
+```bash
+uv run train.py --img 640 --batch 16 --epochs 50 --data dataset_b/dataset.yaml --weights models/yolov5s.pt
+```
+
+## 追加学習コマンド with 再学習済みモデル and GPU
+
+```bash
+uv run train.py --img 640 --batch 16 --epochs 50 --data dataset_b\dataset.yaml --weights models\BLweights_re.pt --device 0 --workers 0
+```

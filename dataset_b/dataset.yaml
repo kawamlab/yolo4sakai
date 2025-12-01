@@ -1,0 +1,14 @@
+# YOLOv5 dataset config for dataset_b
+# Train/Val are split into subfolders under images/ and labels/
+
+train: dataset_b/images/train
+val: dataset_b/images/val
+# Optional test set
+# test: dataset_b/images/test
+
+# Number of classes
+nc: 2
+
+# Class names (index matches order)
+# README says: BLF -> class 0, BLB -> class 1
+names: [BLF, BLB]
