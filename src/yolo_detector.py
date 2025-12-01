@@ -12,6 +12,7 @@ class YoloModel(Enum):
     BLACK = "BKweights_epoch_150.pt"
     BLUE = "BLweights_epoch_200.pt"
     BLUE_NEW = "BLweights_re.pt"
+    BLUE_NEW_V2 = "BLweights_re2.pt"
 
 
 class DetectionResult(BaseModel):

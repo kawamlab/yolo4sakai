@@ -172,6 +172,10 @@ sh src/run.sh
 `BLB_`で始まるファイル名はクラスID 1、`BLF_`で始まるファイル名はクラスID 0 として扱います。
 ラベルは `root/dataset_b/labels/` に保存されます。
 
+```bash
+uv run src/auto_annotate.py
+```
+
 ## 学習コマンド
 
 ```bash
@@ -181,5 +185,5 @@ uv run train.py --img 640 --batch 16 --epochs 50 --data dataset_b/dataset.yaml -
 ## 追加学習コマンド with 再学習済みモデル and GPU
 
 ```bash
-uv run train.py --img 640 --batch 16 --epochs 50 --data dataset_b\dataset.yaml --weights models\BLweights_re.pt --device 0 --workers 0
+uv run train.py --img 640 --batch 16 --epochs 50 --data dataset_b/dataset.yaml --weights models/BLweights_re.pt --device 0 --workers 0
 ```

@@ -7,8 +7,8 @@ import numpy as np
 ## BLB_で始まるファイル名はクラスID 1、BLF_で始まるファイル名はクラスID 0 として扱う
 
 # 画像ディレクトリ
-# IMG_DIR = pathlib.Path(__file__).resolve().parent.parent / "dataset_b" / "images" / "train"
-IMG_DIR = pathlib.Path(__file__).resolve().parent.parent / "dataset_b" / "images" / "val"
+IMG_DIR = pathlib.Path(__file__).resolve().parent.parent / "dataset_b" / "images" / "train"
+# IMG_DIR = pathlib.Path(__file__).resolve().parent.parent / "dataset_b" / "images" / "val"
 
 
 # ファイル名からクラスIDを決定（例: BLB_ → 0, BLF_ → 1 など。必要に応じて修正）
@@ -72,8 +72,8 @@ def main():
 
         # 保存
         # txt_path = img_path.with_suffix(".txt")
-        # txt_path = IMG_DIR.parents[1] / "labels" / "train" / img_path.with_suffix(".txt").name
-        txt_path = IMG_DIR.parents[1] / "labels" / "val" / img_path.with_suffix(".txt").name
+        txt_path = IMG_DIR.parents[1] / "labels" / "train" / img_path.with_suffix(".txt").name
+        # txt_path = IMG_DIR.parents[1] / "labels" / "val" / img_path.with_suffix(".txt").name
         txt_path.parent.mkdir(parents=True, exist_ok=True)
 
         write_yolo_annotation(txt_path, class_id, bbox, img.shape)
